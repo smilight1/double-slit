@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>이중 슬릿 간섭 실험 · 가상 실험 보고서</title>
+<style>
+:root{
+  --paper:#E7ECF2;
+  --card:#FFFFFF;
+  --ink:#0F1A26;
+  --muted:#5C6B7A;
+  --rule:#C4CFDB;
+  --rule-soft:#DDE4EC;
+  --dark:#060A10;
+  --dark2:#0F1721;
+  --dark-line:#25313F;
+  --spectrum:#ff9d00;
+  --spectrum-dim:rgba(255,157,0,.35);
+  --gothic:"Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic","맑은 고딕",system-ui,sans-serif;
+  --myeongjo:"Nanum Myeongjo","Apple SD Gothic Neo","Batang","바탕",Georgia,serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--gothic);
+  font-size:16px;
+  line-height:1.65;
+  font-feature-settings:"tnum" 1;
+  letter-spacing:-.01em;
+}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px 96px}
+
+/* ---------- 표지 ---------- */
+.masthead{
+  padding:44px 0 22px;
+  border-bottom:2px solid var(--ink);
+  display:flex;
+  flex-wrap:wrap;
+  gap:24px;
+  align-items:flex-end;
+  justify-content:space-between;
+}
+.masthead h1{
+  font-family:var(--myeongjo);
+  font-weight:700;
+  font-size:clamp(28px,4.4vw,44px);
+  line-height:1.2;
+  margin:0;
+  letter-spacing:-.02em;
+}
+.masthead p{margin:8px 0 0;color:var(--muted);font-size:14.5px;max-width:46ch}
+.idblock{display:flex;gap:18px;flex-wrap:wrap}
+.idfield{font-size:13.5px;color:var(--muted)}
+.idfield span{display:block;margin-bottom:2px}
+.idfield .fill{
+  display:block;min-width:110px;border-bottom:1px solid var(--ink);
+  color:var(--ink);font-size:16px;padding:2px 4px;outline:none;
+}
+.idfield .fill:focus{background:var(--spectrum-dim)}
+
+/* ---------- 섹션 ---------- */
+section{margin-top:56px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:18px}
+.sec-head h2{
+  font-family:var(--myeongjo);font-size:23px;margin:0;font-weight:700;letter-spacing:-.02em;
+}
+.sec-head .note{font-size:13.5px;color:var(--muted)}
+
+/* ---------- 암실 패널 ---------- */
+.darkroom{
+  background:var(--dark);
+  border-radius:3px;
+  padding:22px 22px 26px;
+  color:#D7E2EE;
+  box-shadow:inset 0 0 0 1px var(--dark-line);
+}
+.screen-label{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-size:12.5px;color:#7E8FA1;margin-bottom:10px;gap:12px;flex-wrap:wrap;
+}
+.screen-label b{color:#D7E2EE;font-weight:600;font-size:13px}
+.canvas-hold{position:relative;background:#000;border:1px solid var(--dark-line);border-radius:2px;overflow:hidden}
+canvas#pattern{display:block;width:100%;height:190px;touch-action:none;cursor:ew-resize}
+canvas#ruler{display:block;width:100%;height:38px}
+.readout{
+  display:flex;gap:26px;flex-wrap:wrap;margin-top:14px;
+  padding-top:14px;border-top:1px solid var(--dark-line);
+}
+.readout div{font-size:13px;color:#7E8FA1}
+.readout strong{display:block;font-size:20px;color:#EAF1F8;font-weight:600;letter-spacing:-.02em}
+.readout strong small{font-size:12px;color:#7E8FA1;font-weight:400;margin-left:2px}
+.hint-inline{font-size:12.5px;color:#6C7C8D;margin-top:12px}
+
+/* ---------- 조작부 ---------- */
+.controls{
+  display:grid;grid-template-columns:1fr 1fr;gap:22px 34px;
+  margin-top:22px;padding-top:20px;border-top:1px solid var(--dark-line);
+}
+.ctrl label{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;color:#9CACBC;margin-bottom:6px}
+.ctrl label b{color:#EAF1F8;font-size:15px;font-weight:600}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent;cursor:pointer;
+}
+input[type=range]::-webkit-slider-runnable-track{height:3px;background:#2B3745;border-radius:2px}
+input[type=range]::-moz-range-track{height:3px;background:#2B3745;border-radius:2px}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+  background:var(--spectrum);border:2px solid #060A10;margin-top:-7px;
+  box-shadow:0 0 0 1px var(--spectrum);
+}
+input[type=range]::-moz-range-thumb{
+  width:16px;height:16px;border-radius:50%;background:var(--spectrum);
+  border:2px solid #060A10;box-shadow:0 0 0 1px var(--spectrum);
+}
+input[type=range]:focus-visible{outline:2px solid var(--spectrum);outline-offset:4px;border-radius:4px}
+.toggles{display:flex;gap:20px;flex-wrap:wrap;margin-top:20px;font-size:13.5px;color:#9CACBC}
+.toggles label{display:flex;align-items:center;gap:7px;cursor:pointer}
+.toggles input{accent-color:var(--spectrum);width:15px;height:15px}
+
+/* ---------- 모식도 ---------- */
+.schematic{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:18px 18px 8px;margin-top:24px}
+.schematic h3{margin:0 0 4px;font-size:15px;font-weight:600}
+.schematic p{margin:0 0 10px;font-size:13px;color:var(--muted)}
+.schematic svg{width:100%;height:auto;display:block}
+
+/* ---------- 버튼 ---------- */
+button{
+  font-family:inherit;font-size:14px;padding:9px 16px;border-radius:2px;
+  border:1px solid var(--ink);background:var(--ink);color:#fff;cursor:pointer;
+  letter-spacing:-.01em;
+}
+button.ghost{background:transparent;color:var(--ink)}
+button:hover{opacity:.86}
+button:focus-visible{outline:2px solid var(--spectrum);outline-offset:2px}
+.darkroom button{border-color:#3A4757;background:#182230;color:#DCE6F0}
+.darkroom button.primary{background:var(--spectrum);border-color:var(--spectrum);color:#0A0F16;font-weight:600}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+
+/* ---------- 기록표 ---------- */
+table{width:100%;border-collapse:collapse;font-size:14px;background:var(--card)}
+caption{text-align:left;font-size:13px;color:var(--muted);padding-bottom:8px}
+th,td{padding:9px 10px;border-bottom:1px solid var(--rule-soft);text-align:right}
+th:first-child,td:first-child{text-align:left}
+thead th{border-bottom:1.5px solid var(--ink);font-weight:600;font-size:13px}
+tbody tr:hover{background:#F3F6FA}
+.empty-row td{text-align:center;color:var(--muted);padding:26px 10px;font-size:13.5px}
+
+/* ---------- 문항 ---------- */
+.qitem{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:22px 24px;margin-bottom:16px;break-inside:avoid}
+.qtop{display:flex;gap:16px;align-items:baseline}
+.qnum{font-family:var(--myeongjo);font-size:26px;font-weight:700;line-height:1;min-width:34px;color:var(--ink)}
+.qbody{flex:1;min-width:0}
+.qtag{font-size:12px;color:var(--muted);border-left:2px solid var(--spectrum);padding-left:8px;margin-bottom:8px}
+.qtext{font-size:16.5px;font-weight:600;margin:0 0 4px;letter-spacing:-.015em}
+.qsub{font-size:14px;color:var(--muted);margin:6px 0 0}
+.answer{
+  margin-top:14px;min-height:104px;border:1px solid var(--rule);border-radius:2px;
+  padding:12px 14px;font-size:15px;line-height:2.0;outline:none;
+  background:repeating-linear-gradient(to bottom,transparent,transparent 29px,var(--rule-soft) 29px,var(--rule-soft) 30px);
+  background-position:0 12px;
+}
+.answer:focus{border-color:var(--ink);box-shadow:0 0 0 3px var(--spectrum-dim)}
+.answer:empty:before{content:attr(data-ph);color:#9AA8B6}
+details{margin-top:10px;font-size:13.5px}
+summary{cursor:pointer;color:var(--muted);width:fit-content}
+summary:focus-visible{outline:2px solid var(--spectrum);outline-offset:2px}
+details p{margin:8px 0 0;padding:10px 12px;background:#F2F5F9;border-left:2px solid var(--rule);color:#3E4C5A}
+.fillin{margin-top:16px;border:1px solid var(--rule);border-radius:2px;overflow:hidden}
+.fillin .cond{margin:0;padding:11px 14px;background:#F2F5F9;border-bottom:1px solid var(--rule);font-size:13.5px;color:#3E4C5A}
+.fillin .cond b{font-weight:600;color:var(--ink);margin-right:8px}
+.fillin table{width:100%;border-collapse:collapse;background:transparent}
+.fillin th,.fillin td{text-align:center;padding:9px 10px;border-bottom:1px solid var(--rule-soft);font-size:14px}
+.fillin th:first-child,.fillin td:first-child{text-align:left}
+.fillin thead th{background:#FAFBFD;font-weight:600;font-size:13px;border-bottom:1.5px solid var(--ink)}
+.fillin tbody tr:last-child td{border-bottom:none}
+.fillin tbody tr:hover{background:transparent}
+.fillin td.in{background:#FFFCEF;cursor:text;outline:none;min-width:84px}
+.fillin td.in:focus{background:#fff;box-shadow:inset 0 0 0 2px var(--spectrum)}
+.fillin td.in:empty:before{content:"";display:inline-block;width:56px;border-bottom:1px dotted #B9C4D0}
+.compare{margin-top:14px;border:1px solid var(--rule);border-radius:2px;overflow:hidden}
+.compare .row{display:flex;align-items:center;gap:12px;padding:8px 12px;background:#0A0E14}
+.compare .row span{font-size:12.5px;color:#9CACBC;width:52px;flex:none}
+.compare canvas{flex:1;height:52px;display:block;min-width:0}
+.compare .ruler-row{background:#0A0E14;padding:0 12px 8px 76px}
+.compare .ruler-row canvas{height:30px;width:100%}
+.compare .cap{padding:9px 12px;font-size:12.5px;color:var(--muted);background:#F2F5F9;border-top:1px solid var(--rule)}
+
+/* ---------- 마무리 ---------- */
+.finish{margin-top:44px;padding-top:22px;border-top:2px solid var(--ink);display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.finish p{margin:0;flex:1;min-width:240px;font-size:13.5px;color:var(--muted)}
+
+@media (max-width:820px){
+  .controls{grid-template-columns:1fr}
+  .masthead{padding-top:30px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+@media print{
+  :root{--paper:#fff}
+  body{font-size:12.5pt}
+  .wrap{max-width:none;padding:0}
+  .noprint{display:none!important}
+  .darkroom{box-shadow:none;border:1px solid #000;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  canvas{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  section{margin-top:26px;break-inside:avoid}
+  .qitem{border-color:#999}
+  details{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <div>
+    <h1>이중 슬릿 간섭 실험</h1>
+    <p>슬릿 간격·파장·스크린 거리를 바꿔 가며 무늬를 직접 측정하고, 아래 여섯 문항에 답하는 가상 실험 보고서입니다.</p>
+  </div>
+  <div class="idblock">
+    <div class="idfield"><span>학번</span><div class="fill" contenteditable="true" id="f-num"></div></div>
+    <div class="idfield"><span>이름</span><div class="fill" contenteditable="true" id="f-name"></div></div>
+    <div class="idfield"><span>날짜</span><div class="fill" contenteditable="true" id="f-date"></div></div>
+  </div>
+</header>
+
+<!-- ============ 1. 가상 실험 ============ -->
+<section>
+  <div class="sec-head">
+    <h2>1. 가상 실험</h2>
+    <div class="note">단색광이 이중 슬릿을 지나 스크린에 만든 무늬입니다. 무늬를 클릭하면 밝은 무늬 중심에 측정선이 붙습니다.</div>
+  </div>
+
+  <div class="darkroom">
+    <div class="screen-label">
+      <b>스크린 (가로 80 mm)</b>
+      <span id="screen-caption">파장 600 nm · 슬릿 간격 0.20 mm · 스크린 거리 2.00 m</span>
+    </div>
+
+    <div class="canvas-hold">
+      <canvas id="pattern" aria-label="이중 슬릿 간섭무늬"></canvas>
+    </div>
+    <canvas id="ruler" aria-hidden="true"></canvas>
+
+    <div class="readout">
+      <div>측정선 A<strong id="r-a">m = 0<small>차</small></strong></div>
+      <div>측정선 B<strong id="r-b">m = 5<small>차</small></strong></div>
+      <div>두 측정선 사이 거리<strong id="r-gap">30.00<small>mm</small></strong></div>
+      <div>측정한 무늬 간격 Δy<strong id="r-dy">6.000<small>mm</small></strong></div>
+    </div>
+    <p class="hint-inline">Δy = (측정선 사이 거리) ÷ (두 측정선의 차수 차이) 로 계산됩니다. 여러 무늬를 한꺼번에 재면 오차가 줄어듭니다.</p>
+
+    <div class="controls">
+      <div class="ctrl">
+        <label for="s-lam"><span>빛의 파장 λ</span><b><span id="v-lam">600</span> nm</b></label>
+        <input type="range" id="s-lam" min="380" max="750" step="5" value="600">
+      </div>
+      <div class="ctrl">
+        <label for="s-d"><span>슬릿 사이 간격 d</span><b><span id="v-d">0.20</span> mm</b></label>
+        <input type="range" id="s-d" min="0.10" max="0.60" step="0.01" value="0.20">
+      </div>
+      <div class="ctrl">
+        <label for="s-L"><span>슬릿 – 스크린 거리 L</span><b><span id="v-L">2.00</span> m</b></label>
+        <input type="range" id="s-L" min="0.5" max="3.0" step="0.05" value="2.0">
+      </div>
+      <div class="ctrl">
+        <label for="s-zoom"><span>밝기</span><b><span id="v-zoom">1.0</span> ×</b></label>
+        <input type="range" id="s-zoom" min="0.4" max="2.5" step="0.1" value="1.0">
+      </div>
+    </div>
+
+    <div class="toggles">
+      <label><input type="checkbox" id="c-order" checked> 무늬 차수 m 표시</label>
+      <label><input type="checkbox" id="c-env"> 슬릿 폭에 의한 회절 효과 함께 보기</label>
+      <label><input type="checkbox" id="c-gray"> 흑백으로 보기</label>
+    </div>
+
+    <div class="btnrow noprint">
+      <button class="primary" id="btn-record">이 조건 기록표에 담기</button>
+      <button id="btn-reset">처음 조건으로</button>
+    </div>
+  </div>
+
+  <div class="schematic">
+    <h3>실험 모식도</h3>
+    <p>측정선 B가 놓인 밝은 무늬를 점 P로 두고 그린 그림입니다. 실제 비율과 다르게 그렸습니다(L ≫ d).</p>
+    <svg viewBox="0 0 900 300" role="img" aria-label="이중 슬릿 간섭 모식도">
+      <defs>
+        <marker id="ah" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="#0F1A26"/>
+        </marker>
+        <marker id="ah2" markerWidth="9" markerHeight="9" refX="1" refY="4.5" orient="auto">
+          <path d="M9,0 L0,4.5 L9,9 z" fill="#0F1A26"/>
+        </marker>
+      </defs>
+      <!-- 슬릿판 -->
+      <rect x="146" y="30" width="9" height="88" fill="#0F1A26"/>
+      <rect x="146" y="132" width="9" height="36" fill="#0F1A26"/>
+      <rect x="146" y="182" width="9" height="88" fill="#0F1A26"/>
+      <text x="150" y="292" text-anchor="middle" font-size="13" fill="#5C6B7A">이중 슬릿</text>
+      <!-- 슬릿 표시 -->
+      <circle cx="150.5" cy="125" r="4" fill="#fff" stroke="#0F1A26" stroke-width="2"/>
+      <circle cx="150.5" cy="175" r="4" fill="#fff" stroke="#0F1A26" stroke-width="2"/>
+      <text x="128" y="122" text-anchor="end" font-size="14" fill="#0F1A26">S₁</text>
+      <text x="128" y="182" text-anchor="end" font-size="14" fill="#0F1A26">S₂</text>
+      <!-- d 치수선 -->
+      <line x1="112" y1="125" x2="112" y2="175" stroke="#0F1A26" stroke-width="1.2" marker-start="url(#ah2)" marker-end="url(#ah)"/>
+      <text x="104" y="154" text-anchor="end" font-size="14" fill="#0F1A26">d = <tspan id="sv-d">0.20</tspan> mm</text>
+      <!-- 입사광 -->
+      <line x1="24" y1="150" x2="140" y2="150" stroke="var(--spectrum)" stroke-width="2.5"/>
+      <line x1="24" y1="136" x2="140" y2="136" stroke="var(--spectrum)" stroke-width="1" opacity=".5"/>
+      <line x1="24" y1="164" x2="140" y2="164" stroke="var(--spectrum)" stroke-width="1" opacity=".5"/>
+      <text x="24" y="126" font-size="13" fill="#5C6B7A">단색 평면파</text>
+      <!-- 스크린 -->
+      <rect x="800" y="18" width="7" height="254" fill="#0F1A26"/>
+      <text x="803" y="292" text-anchor="middle" font-size="13" fill="#5C6B7A">스크린</text>
+      <!-- 중앙축 -->
+      <line x1="155" y1="150" x2="800" y2="150" stroke="#C4CFDB" stroke-width="1" stroke-dasharray="6 5"/>
+      <text x="812" y="155" font-size="13" fill="#5C6B7A">O</text>
+      <!-- 두 경로 -->
+      <line id="sv-r1" x1="150.5" y1="125" x2="800" y2="96" stroke="#0F1A26" stroke-width="1.6"/>
+      <line id="sv-r2" x1="150.5" y1="175" x2="800" y2="96" stroke="#0F1A26" stroke-width="1.6"/>
+      <circle id="sv-p" cx="800" cy="96" r="4.5" fill="var(--spectrum)" stroke="#0F1A26" stroke-width="1.5"/>
+      <text id="sv-plabel" x="812" y="101" font-size="13" fill="#0F1A26">P</text>
+      <!-- 경로차 -->
+      <line id="sv-perp" x1="150.5" y1="125" x2="168" y2="169" stroke="#0F1A26" stroke-width="1.2" stroke-dasharray="4 3"/>
+      <path id="sv-pd" d="M150.5,175 L168,169" stroke="var(--spectrum)" stroke-width="4"/>
+      <text x="196" y="212" font-size="14" fill="#0F1A26">경로차 = d sin θ</text>
+      <line x1="192" y1="205" x2="170" y2="176" stroke="#5C6B7A" stroke-width="1"/>
+      <!-- 각도 -->
+      <path d="M230,150 A80,80 0 0,0 226,134" fill="none" stroke="#5C6B7A" stroke-width="1.2"/>
+      <text x="240" y="142" font-size="13" fill="#5C6B7A">θ</text>
+      <!-- y 치수 -->
+      <line id="sv-y" x1="838" y1="150" x2="838" y2="96" stroke="#0F1A26" stroke-width="1.2" marker-start="url(#ah2)" marker-end="url(#ah)"/>
+      <text id="sv-ylabel" x="846" y="128" font-size="13" fill="#0F1A26">y</text>
+      <!-- L 치수 -->
+      <line x1="155" y1="286" x2="800" y2="286" stroke="#0F1A26" stroke-width="1.2" marker-start="url(#ah2)" marker-end="url(#ah)"/>
+      <text x="478" y="278" text-anchor="middle" font-size="14" fill="#0F1A26">L = <tspan id="sv-L">2.00</tspan> m</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ============ 2. 기록과 그래프 ============ -->
+<section>
+  <div class="sec-head">
+    <h2>2. 측정 기록</h2>
+    <div class="note">한 변인만 바꾸면서 기록해 두면 문항 1·2의 표를 채울 때 그대로 옮겨 쓸 수 있습니다.</div>
+  </div>
+
+  <div class="datawrap">
+    <div>
+      <table id="tbl">
+        <caption>기록표 — 측정선 A·B로 잰 값입니다.</caption>
+        <thead>
+          <tr><th>회</th><th>λ (nm)</th><th>d (mm)</th><th>L (m)</th><th>측정 Δy (mm)</th></tr>
+        </thead>
+        <tbody id="tbody">
+          <tr class="empty-row"><td colspan="5">아직 기록이 없습니다. 위에서 조건을 정하고 ‘기록표에 담기’를 누르세요.</td></tr>
+        </tbody>
+      </table>
+      <div class="btnrow noprint">
+        <button class="ghost" id="btn-clear">기록 모두 지우기</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. 문항 ============ -->
+<section>
+  <div class="sec-head">
+    <h2>3. 문항</h2>
+    <div class="note">위 실험에서 얻은 값을 근거로 답하세요.</div>
+  </div>
+
+  <div class="qitem">
+    <div class="qtop">
+      <div class="qnum">1</div>
+      <div class="qbody">
+        <div class="qtag">이중 슬릿의 간섭 실험 결과 이해하기</div>
+        <p class="qtext">λ와 L을 고정한 채 d만 0.10 mm에서 0.60 mm까지 바꾸어 Δy를 3회 이상 측정하고, 슬릿 사이의 간격 d와 간섭무늬 간격 Δy 사이의 관계를 실험 결과로부터 도출하시오.</p>
+        <p class="qsub">아래 표를 채운 뒤, d와 Δy를 곱한 값을 근거로 삼으시오.</p>
+        <div class="fillin" data-q="1">
+          <p class="cond"><b>측정 조건</b>λ = 600 nm, L = 2.00 m 고정. 측정선 A를 m = 0, B를 m = 5에 놓고 잰 거리를 5로 나누었다.</p>
+          <table>
+            <thead><tr><th>d (mm)</th><th>측정 Δy (mm)</th><th>d × Δy (mm²)</th></tr></thead>
+            <tbody>
+              <tr><td>0.10</td><td class="in" contenteditable="true"></td><td class="in" contenteditable="true"></td></tr>
+              <tr><td>0.20</td><td class="in" contenteditable="true"></td><td class="in" contenteditable="true"></td></tr>
+              <tr><td>0.30</td><td class="in" contenteditable="true"></td><td class="in" contenteditable="true"></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="answer" contenteditable="true" data-ph="표에서 읽어 낸 관계를 관계식과 함께 쓰세요." data-q="1"></div>
+        <details class="noprint"><summary>힌트</summary><p>d를 2배로 만들면 Δy가 어떻게 되는지 확인해 보세요. 표 셋째 칸의 d·Δy 값이 세 번 모두 같은지 비교하면 관계가 분명해집니다.</p></details>
+      </div>
+    </div>
+  </div>
+
+  <div class="qitem">
+    <div class="qtop">
+      <div class="qnum">2</div>
+      <div class="qbody">
+        <div class="qtag">이중 슬릿의 간섭 실험 결과 이해하기</div>
+        <p class="qtext">d와 L을 고정한 채 파장 λ만 바꾸어 측정한 결과를 이용하여, 빛의 파장과 간섭무늬 간격 사이의 관계를 설명하시오.</p>
+        <p class="qsub">아래 표를 채운 뒤, 두 빛의 무늬를 비교한 결과를 문장으로 설명하시오.</p>
+        <div class="fillin" data-q="2">
+          <p class="cond"><b>측정 조건</b>d = 0.20 mm, L = 2.00 m 고정</p>
+          <table>
+            <thead><tr><th>λ (nm)</th><th>측정 Δy (mm)</th><th>Δy / λ (mm·nm⁻¹)</th></tr></thead>
+            <tbody>
+              <tr><td>400 (보라)</td><td class="in" contenteditable="true"></td><td class="in" contenteditable="true"></td></tr>
+              <tr><td>700 (빨강)</td><td class="in" contenteditable="true"></td><td class="in" contenteditable="true"></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="answer" contenteditable="true" data-ph="표에서 읽어 낸 관계를 근거와 함께 설명하세요." data-q="2"></div>
+        <details class="noprint"><summary>힌트</summary><p>Δy를 λ로 나눈 값이 두 경우에 비슷하게 나오는지 확인해 보세요.</p></details>
+      </div>
+    </div>
+  </div>
+
+  <div class="qitem">
+    <div class="qtop">
+      <div class="qnum">3</div>
+      <div class="qbody">
+        <div class="qtag">이중 슬릿의 간섭 실험 결과 이해하기</div>
+        <p class="qtext">위 모식도를 이용하여, 이웃한 밝은 무늬 사이의 거리 Δy가 λL/d 임을 유도하시오.</p>
+        <p class="qsub">경로차를 d sin θ로 나타내는 과정, θ가 매우 작을 때 sin θ ≈ tan θ = y/L 로 근사할 수 있는 이유, m차 밝은 무늬의 위치 y를 구하는 과정이 모두 드러나야 합니다.</p>
+        <div class="answer" contenteditable="true" data-ph="① 경로차 → ② 보강간섭 조건 → ③ 근사 → ④ 이웃한 두 무늬의 위치 차 순서로 쓰세요." data-q="3" style="min-height:150px"></div>
+        <details class="noprint"><summary>힌트</summary><p>m차와 (m+1)차 밝은 무늬의 위치를 각각 구한 뒤 두 값을 빼면 m이 사라집니다. 실험값으로 λL/d를 계산해 측정 Δy와 비교해 검증도 해 보세요.</p></details>
+      </div>
+    </div>
+  </div>
+
+  <div class="qitem">
+    <div class="qtop">
+      <div class="qnum">4</div>
+      <div class="qbody">
+        <div class="qtag">간섭 실험 결과에 영향을 주는 요인 설명하기</div>
+        <p class="qtext">이중 슬릿 간섭 실험에서 보강간섭이 일어나는 조건을 경로차로 제시하시오.</p>
+        <div class="answer" contenteditable="true" data-ph="조건식을 쓰세요." data-q="4"></div>
+        <details class="noprint"><summary>힌트</summary><p>두 파동의 마루와 마루가 만나려면 한 파동이 다른 파동보다 정확히 몇 파장만큼 더 멀리 온 것이어야 할지 생각해 보세요.</p></details>
+      </div>
+    </div>
+  </div>
+
+  <div class="qitem">
+    <div class="qtop">
+      <div class="qnum">5</div>
+      <div class="qbody">
+        <div class="qtag">간섭 실험 결과에 영향을 주는 요인 설명하기</div>
+        <p class="qtext">이중 슬릿 간섭 실험에서 상쇄간섭이 일어나는 조건을 경로차로 제시하시오.</p>
+        <div class="answer" contenteditable="true" data-ph="" data-q="5"></div>
+        <details class="noprint"><summary>힌트</summary><p>보강간섭 조건과 견주어 보세요. 한 파동의 마루가 다른 파동의 골과 만나려면 경로차가 몇 파장만큼이어야 할지 생각하면 됩니다.</p></details>
+      </div>
+    </div>
+  </div>
+
+  <div class="qitem">
+    <div class="qtop">
+      <div class="qnum">6</div>
+      <div class="qbody">
+        <div class="qtag">간섭 실험 결과에 영향을 주는 요인 설명하기</div>
+        <p class="qtext">아래는 같은 이중 슬릿(d = 0.25 mm)과 같은 스크린 거리(L = 2.00 m)에서 서로 다른 단색광 A, B로 얻은 간섭무늬를 흑백으로 나타낸 것이다. 두 빛의 파장을 비교하시오.</p>
+        <div class="compare">
+          <div class="row"><span>빛 A</span><canvas id="cmpA"></canvas></div>
+          <div class="row"><span>빛 B</span><canvas id="cmpB"></canvas></div>
+          <div class="ruler-row"><canvas id="cmpR"></canvas></div>
+          <div class="cap">눈금 단위는 mm이며, 두 무늬 모두 같은 배율로 나타냈습니다.</div>
+        </div>
+        <div class="answer" contenteditable="true" data-ph="" data-q="6"></div>
+        <details class="noprint"><summary>힌트</summary><p>d와 L이 같다면 Δy는 λ에만 비례합니다. 자 눈금으로 밝은 무늬 여러 개를 한꺼번에 재서 Δy를 구해 비교해 보세요.</p></details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="finish noprint">
+  <p>답을 다 썼다면 내려받거나 인쇄해 제출하세요. 이 페이지를 닫으면 입력한 내용은 남지 않습니다.</p>
+  <button class="ghost" id="btn-download">답안 내려받기</button>
+  <button id="btn-print">인쇄 · PDF로 저장</button>
+</div>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- 상태 ---------- */
+var S = { lam:600, d:0.20, L:2.00, gain:1.0, order:true, env:false, gray:false, mA:0, mB:5 };
+var SCREEN_W = 0.080;              // 스크린 실제 폭 80 mm
+var records = [];
+
+var $ = function(id){ return document.getElementById(id); };
+
+/* ---------- 파장 → 색 ---------- */
+function wavelengthRGB(nm){
+  var r=0,g=0,b=0;
+  if(nm>=380&&nm<440){ r=-(nm-440)/60; b=1; }
+  else if(nm<490){ g=(nm-440)/50; b=1; }
+  else if(nm<510){ g=1; b=-(nm-510)/20; }
+  else if(nm<580){ r=(nm-510)/70; g=1; }
+  else if(nm<645){ r=1; g=-(nm-645)/65; }
+  else if(nm<=780){ r=1; }
+  var f=1;
+  if(nm>700) f=0.3+0.7*(780-nm)/80;
+  else if(nm<420) f=0.3+0.7*(nm-380)/40;
+  var gam=0.8;
+  return [Math.pow(r*f,gam)*255, Math.pow(g*f,gam)*255, Math.pow(b*f,gam)*255];
+}
+function css(rgb){ return 'rgb('+Math.round(rgb[0])+','+Math.round(rgb[1])+','+Math.round(rgb[2])+')'; }
+
+/* ---------- 물리 ---------- */
+function fringeSpacing(lam_nm, d_mm, L_m){ return (lam_nm*1e-9)*L_m/(d_mm*1e-3); }  // m
+function intensity(y, lam_nm, d_mm, L_m, env){
+  var lam=lam_nm*1e-9, d=d_mm*1e-3;
+  var beta = Math.PI*d*y/(lam*L_m);
+  var I = Math.cos(beta); I*=I;
+  if(env){
+    var a=d/4, al=Math.PI*a*y/(lam*L_m);
+    var s = (Math.abs(al)<1e-9)?1:Math.sin(al)/al;
+    I*=s*s;
+  }
+  return I;
+}
+
+/* ---------- 캔버스 준비 ---------- */
+function fit(cv, cssH){
+  var dpr = window.devicePixelRatio||1;
+  var w = cv.clientWidth||600;
+  var h = cssH || cv.clientHeight || 100;
+  cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr);
+  var ctx = cv.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  return {ctx:ctx,w:w,h:h};
+}
+
+/* ---------- 무늬 그리기 ---------- */
+function drawPattern(cv, lam, d, L, opts){
+  opts = opts||{};
+  var f = fit(cv, cv.clientHeight);
+  var ctx=f.ctx, W=f.w, H=f.h;
+  var base = opts.gray ? [235,235,235] : wavelengthRGB(lam);
+  var gain = opts.gain==null?1:opts.gain;
+  var mPerPx = SCREEN_W/W;
+  var SUB=5;
+  ctx.clearRect(0,0,W,H);
+  for(var px=0; px<W; px++){
+    var acc=0;
+    for(var s=0;s<SUB;s++){
+      var y = (px + (s+0.5)/SUB - W/2)*mPerPx;
+      acc += intensity(y, lam, d, L, opts.env);
+    }
+    var I = Math.min(1, acc/SUB*gain);
+    ctx.fillStyle='rgb('+Math.round(base[0]*I)+','+Math.round(base[1]*I)+','+Math.round(base[2]*I)+')';
+    ctx.fillRect(px,0,1.02,H);
+  }
+  return {W:W,H:H,ctx:ctx,mPerPx:mPerPx};
+}
+
+/* ---------- 자 ---------- */
+function drawRuler(cv, opts){
+  opts=opts||{};
+  var f=fit(cv, cv.clientHeight);
+  var ctx=f.ctx, W=f.w, H=f.h;
+  ctx.clearRect(0,0,W,H);
+  var pxPerMm = W/(SCREEN_W*1000);
+  ctx.strokeStyle='#3A4757'; ctx.fillStyle='#7E8FA1';
+  ctx.font='11px '+getComputedStyle(document.body).fontFamily;
+  ctx.textAlign='center';
+  ctx.beginPath(); ctx.moveTo(0,0.5); ctx.lineTo(W,0.5); ctx.stroke();
+  for(var mm=-40; mm<=40; mm++){
+    var x = W/2 + mm*pxPerMm;
+    if(x<0||x>W) continue;
+    var big = (mm%10===0), mid=(mm%5===0);
+    var len = big?10:(mid?6:3);
+    ctx.beginPath();
+    ctx.strokeStyle = big?'#5F7284':'#333F4D';
+    ctx.moveTo(x,1); ctx.lineTo(x,1+len); ctx.stroke();
+    if(big) ctx.fillText(mm, x, 24);
+  }
+}
+
+/* ---------- 메인 화면 ---------- */
+var patCv=$('pattern'), rulCv=$('ruler');
+function nearestOrder(y){ return Math.round(y/fringeSpacing(S.lam,S.d,S.L)); }
+function orderPos(m){ return m*fringeSpacing(S.lam,S.d,S.L); }   // m
+
+function render(){
+  var rgb = wavelengthRGB(S.lam);
+  document.documentElement.style.setProperty('--spectrum', css(rgb));
+  document.documentElement.style.setProperty('--spectrum-dim','rgba('+Math.round(rgb[0])+','+Math.round(rgb[1])+','+Math.round(rgb[2])+',.30)');
+
+  var p = drawPattern(patCv, S.lam, S.d, S.L, {gain:S.gain, env:S.env, gray:S.gray});
+  var ctx=p.ctx, W=p.W, H=p.H;
+  var pxPerM = W/SCREEN_W;
+  var xOf = function(y){ return W/2 + y*pxPerM; };
+
+  // 차수 라벨
+  if(S.order){
+    var sp = fringeSpacing(S.lam,S.d,S.L);
+    var maxM = Math.floor((SCREEN_W/2)/sp);
+    if(maxM<=40){
+      ctx.font='11px '+getComputedStyle(document.body).fontFamily;
+      ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,.62)';
+      var step = maxM>14?5:1;
+      for(var m=-maxM;m<=maxM;m++){
+        if(m%step!==0) continue;
+        ctx.fillText(m, xOf(orderPos(m)), H-7);
+      }
+    }
+  }
+
+  // 측정선
+  [['A',S.mA,'#FFFFFF'],['B',S.mB,'#FFD35C']].forEach(function(k){
+    var x = xOf(orderPos(k[1]));
+    if(x<-20||x>W+20) return;
+    ctx.strokeStyle=k[2]; ctx.lineWidth=1.4;
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H-16); ctx.stroke();
+    ctx.fillStyle=k[2]; ctx.font='600 12px '+getComputedStyle(document.body).fontFamily;
+    ctx.textAlign='center';
+    ctx.fillRect(x-9,0,18,16);
+    ctx.fillStyle='#060A10'; ctx.fillText(k[0], x, 12);
+  });
+
+  drawRuler(rulCv);
+
+  // 수치
+  var sp = fringeSpacing(S.lam,S.d,S.L);
+  var gap = Math.abs(orderPos(S.mB)-orderPos(S.mA))*1000;
+  var dm = S.mB-S.mA;
+  $('v-lam').textContent=S.lam;
+  $('v-d').textContent=S.d.toFixed(2);
+  $('v-L').textContent=S.L.toFixed(2);
+  $('v-zoom').textContent=S.gain.toFixed(1);
+  $('r-a').innerHTML='m = '+S.mA+'<small>차</small>';
+  $('r-b').innerHTML='m = '+S.mB+'<small>차</small>';
+  $('r-gap').innerHTML=gap.toFixed(2)+'<small>mm</small>';
+  $('r-dy').innerHTML = dm===0 ? '—<small>두 측정선의 차수가 같습니다</small>'
+                               : (gap/Math.abs(dm)).toFixed(3)+'<small>mm</small>';
+  $('screen-caption').textContent='파장 '+S.lam+' nm · 슬릿 간격 '+S.d.toFixed(2)+' mm · 스크린 거리 '+S.L.toFixed(2)+' m';
+
+  // 모식도
+  $('sv-d').textContent=S.d.toFixed(2);
+  $('sv-L').textContent=S.L.toFixed(2);
+  var mP = Math.abs(S.mB!==0? S.mB : (S.mA!==0?S.mA:1));
+  var yP = orderPos(mP)*1000; // mm
+  var py = 150 - 118*Math.tanh(yP/25);
+  $('sv-r1').setAttribute('y2',py); $('sv-r2').setAttribute('y2',py);
+  $('sv-p').setAttribute('cy',py);
+  $('sv-plabel').setAttribute('y',py+5);
+  $('sv-plabel').textContent='P (m = '+mP+')';
+  $('sv-y').setAttribute('y2',py);
+  $('sv-ylabel').setAttribute('y',(150+py)/2+4);
+  $('sv-ylabel').textContent='y = '+yP.toFixed(2)+' mm';
+  // 경로차 표시(각도에 맞춰 회전)
+  var ang = Math.atan2(py-150, 800-150.5);
+  var ux=Math.cos(ang), uy=Math.sin(ang);
+  var vx=150.5-150.5, vy=125-175;
+  var t = vx*ux+vy*uy;
+  var hx=150.5+t*ux, hy=175+t*uy;
+  $('sv-perp').setAttribute('x2',hx.toFixed(1)); $('sv-perp').setAttribute('y2',hy.toFixed(1));
+  $('sv-pd').setAttribute('d','M150.5,175 L'+hx.toFixed(1)+','+hy.toFixed(1));
+
+}
+
+/* ---------- 측정선 조작 ---------- */
+function pointerToOrder(ev){
+  var r=patCv.getBoundingClientRect();
+  var x=(ev.clientX-r.left)/r.width;
+  var y=(x-0.5)*SCREEN_W;
+  return nearestOrder(y);
+}
+var dragging=null;
+patCv.addEventListener('pointerdown', function(ev){
+  var m=pointerToOrder(ev);
+  dragging = Math.abs(m-S.mA)<=Math.abs(m-S.mB) ? 'A':'B';
+  if(dragging==='A') S.mA=m; else S.mB=m;
+  patCv.setPointerCapture(ev.pointerId);
+  render();
+});
+patCv.addEventListener('pointermove', function(ev){
+  if(!dragging) return;
+  var m=pointerToOrder(ev);
+  if(dragging==='A') S.mA=m; else S.mB=m;
+  render();
+});
+['pointerup','pointercancel'].forEach(function(t){
+  patCv.addEventListener(t, function(){ dragging=null; });
+});
+
+/* ---------- 컨트롤 ---------- */
+$('s-lam').addEventListener('input',function(){ S.lam=+this.value; render(); });
+$('s-d').addEventListener('input',function(){ S.d=+this.value; render(); });
+$('s-L').addEventListener('input',function(){ S.L=+this.value; render(); });
+$('s-zoom').addEventListener('input',function(){ S.gain=+this.value; render(); });
+$('c-order').addEventListener('change',function(){ S.order=this.checked; render(); });
+$('c-env').addEventListener('change',function(){ S.env=this.checked; render(); });
+$('c-gray').addEventListener('change',function(){ S.gray=this.checked; render(); });
+$('btn-reset').addEventListener('click',function(){
+  S.lam=600;S.d=0.20;S.L=2.00;S.gain=1.0;S.mA=0;S.mB=5;
+  $('s-lam').value=600;$('s-d').value=0.20;$('s-L').value=2.0;$('s-zoom').value=1.0;
+  render();
+});
+
+/* ---------- 기록표 ---------- */
+function measuredDy(){
+  var dm=S.mB-S.mA;
+  if(dm===0) return null;
+  return Math.abs(orderPos(S.mB)-orderPos(S.mA))*1000/Math.abs(dm);
+}
+$('btn-record').addEventListener('click',function(){
+  var dy=measuredDy();
+  if(dy===null){ alert('측정선 A와 B를 서로 다른 밝은 무늬에 놓으세요.'); return; }
+  records.push({lam:S.lam,d:S.d,L:S.L,dy:dy});
+  renderTable();
+});
+$('btn-clear').addEventListener('click',function(){ records=[]; renderTable(); });
+
+function renderTable(){
+  var tb=$('tbody'); tb.innerHTML='';
+  if(!records.length){
+    tb.innerHTML='<tr class="empty-row"><td colspan="5">아직 기록이 없습니다. 위에서 조건을 정하고 ‘기록표에 담기’를 누르세요.</td></tr>';
+    return;
+  }
+  records.forEach(function(r,i){
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td>'+(i+1)+'</td><td>'+r.lam+'</td><td>'+r.d.toFixed(2)+'</td><td>'+r.L.toFixed(2)+'</td><td>'+r.dy.toFixed(3)+'</td>';
+    tb.appendChild(tr);
+  });
+}
+
+/* ---------- 6번 비교 무늬 ---------- */
+function drawCompare(){
+  var dC=0.25, LC=2.00;
+  drawPattern($('cmpA'), 500, dC, LC, {gray:true, gain:1.15});
+  drawPattern($('cmpB'), 700, dC, LC, {gray:true, gain:1.15});
+  drawRuler($('cmpR'));
+}
+
+/* ---------- 답안 내려받기 ---------- */
+$('btn-download').addEventListener('click',function(){
+  var lines=['이중 슬릿 간섭 실험 · 가상 실험 보고서','',
+    '학번: '+$('f-num').innerText.trim(),
+    '이름: '+$('f-name').innerText.trim(),
+    '날짜: '+$('f-date').innerText.trim(),'',
+    '[측정 기록]'];
+  if(records.length){
+    lines.push('회\tλ(nm)\td(mm)\tL(m)\t측정 Δy(mm)');
+    records.forEach(function(r,i){ lines.push((i+1)+'\t'+r.lam+'\t'+r.d.toFixed(2)+'\t'+r.L.toFixed(2)+'\t'+r.dy.toFixed(3)); });
+  } else lines.push('(기록 없음)');
+  lines.push('');
+  document.querySelectorAll('.answer').forEach(function(a){
+    var body=a.closest('.qbody');
+    var q=body.querySelector('.qtext').innerText.trim();
+    lines.push('['+a.dataset.q+'] '+q);
+    var ft=body.querySelector('.fillin');
+    if(ft){
+      ft.querySelectorAll('tr').forEach(function(tr){
+        var cells=[];
+        tr.querySelectorAll('th,td').forEach(function(c){ cells.push(c.innerText.trim()||'-'); });
+        lines.push(cells.join('\t'));
+      });
+      lines.push('');
+    }
+    lines.push(a.innerText.trim()||'(미작성)');
+    lines.push('');
+  });
+  var blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='이중슬릿_간섭실험_보고서.txt';
+  a.click(); URL.revokeObjectURL(a.href);
+});
+$('btn-print').addEventListener('click',function(){ window.print(); });
+
+/* ---------- 초기화 ---------- */
+var d=new Date();
+$('f-date').innerText = d.getFullYear()+'. '+(d.getMonth()+1)+'. '+d.getDate()+'.';
+function boot(){ render(); drawCompare(); }
+window.addEventListener('resize', function(){ render(); drawCompare(); });
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(boot); else boot();
+boot();
+})();
+</script>
+</body>
+</html>
