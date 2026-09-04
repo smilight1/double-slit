@@ -157,6 +157,16 @@ tbody tr:hover{background:#F3F6FA}
 .qtag{font-size:12px;color:var(--muted);border-left:2px solid var(--spectrum);padding-left:8px;margin-bottom:8px}
 .qtext{font-size:16.5px;font-weight:600;margin:0 0 4px;letter-spacing:-.015em}
 .qsub{font-size:14px;color:var(--muted);margin:6px 0 0}
+.symbolbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:14px}
+.symbolbar-label{font-size:12.5px;color:var(--muted);margin-right:2px}
+.symbol-btn{
+  font-family:var(--myeongjo);font-size:16px;min-width:32px;height:32px;padding:0 6px;
+  border:1px solid var(--rule);border-radius:4px;background:#fff;color:var(--ink);
+  cursor:pointer;line-height:1;
+}
+.symbol-btn:hover{background:#F2F5F9;border-color:var(--ink)}
+.symbol-btn:active,.symbol-btn.just-used{background:var(--spectrum-dim);border-color:var(--ink)}
+.symbol-btn:focus-visible{outline:2px solid var(--spectrum);outline-offset:2px}
 .answer{
   margin-top:14px;min-height:104px;border:1px solid var(--rule);border-radius:2px;
   padding:12px 14px;font-size:15px;line-height:2.0;outline:none;
@@ -393,6 +403,17 @@ details p{margin:8px 0 0;padding:10px 12px;background:#F2F5F9;border-left:2px so
             </tbody>
           </table>
         </div>
+        <div class="symbolbar noprint" data-target="1">
+          <span class="symbolbar-label">기호 삽입:</span>
+          <button type="button" class="symbol-btn" data-symbol="λ" title="파장 λ">λ</button>
+          <button type="button" class="symbol-btn" data-symbol="θ" title="각도 θ">θ</button>
+          <button type="button" class="symbol-btn" data-symbol="Δ" title="델타 Δ">Δ</button>
+          <button type="button" class="symbol-btn" data-symbol="°" title="도(각도)">°</button>
+          <button type="button" class="symbol-btn" data-symbol="×" title="곱하기">×</button>
+          <button type="button" class="symbol-btn" data-symbol="÷" title="나누기">÷</button>
+          <button type="button" class="symbol-btn" data-symbol="≈" title="근사값">≈</button>
+          <button type="button" class="symbol-btn" data-symbol="²" title="제곱">²</button>
+        </div>
         <div class="answer" contenteditable="true" data-ph="표에서 읽어 낸 관계를 관계식과 함께 쓰세요." data-q="1"></div>
         <details class="noprint"><summary>힌트</summary><p>d를 2배로 만들면 Δy가 어떻게 되는지 확인해 보세요. 표 셋째 칸의 d·Δy 값이 세 번 모두 같은지 비교하면 관계가 분명해집니다.</p></details>
       </div>
@@ -416,6 +437,17 @@ details p{margin:8px 0 0;padding:10px 12px;background:#F2F5F9;border-left:2px so
             </tbody>
           </table>
         </div>
+        <div class="symbolbar noprint" data-target="2">
+          <span class="symbolbar-label">기호 삽입:</span>
+          <button type="button" class="symbol-btn" data-symbol="λ" title="파장 λ">λ</button>
+          <button type="button" class="symbol-btn" data-symbol="θ" title="각도 θ">θ</button>
+          <button type="button" class="symbol-btn" data-symbol="Δ" title="델타 Δ">Δ</button>
+          <button type="button" class="symbol-btn" data-symbol="°" title="도(각도)">°</button>
+          <button type="button" class="symbol-btn" data-symbol="×" title="곱하기">×</button>
+          <button type="button" class="symbol-btn" data-symbol="÷" title="나누기">÷</button>
+          <button type="button" class="symbol-btn" data-symbol="≈" title="근사값">≈</button>
+          <button type="button" class="symbol-btn" data-symbol="²" title="제곱">²</button>
+        </div>
         <div class="answer" contenteditable="true" data-ph="표에서 읽어 낸 관계를 근거와 함께 설명하세요." data-q="2"></div>
         <details class="noprint"><summary>힌트</summary><p>Δy를 λ로 나눈 값이 두 경우에 비슷하게 나오는지 확인해 보세요.</p></details>
       </div>
@@ -429,6 +461,18 @@ details p{margin:8px 0 0;padding:10px 12px;background:#F2F5F9;border-left:2px so
         <div class="qtag">이중 슬릿의 간섭 실험 결과 이해하기</div>
         <p class="qtext">위 모식도를 이용하여, 이웃한 밝은 무늬 사이의 거리 Δy가 λL/d 임을 유도하시오.</p>
         <p class="qsub">경로차를 d sin θ로 나타내는 과정, θ가 매우 작을 때 sin θ ≈ tan θ = y/L 로 근사할 수 있는 이유, m차 밝은 무늬의 위치 y를 구하는 과정이 모두 드러나야 합니다.</p>
+        <div class="symbolbar noprint" data-target="3">
+          <span class="symbolbar-label">기호 삽입:</span>
+          <button type="button" class="symbol-btn" data-symbol="λ" title="파장 λ">λ</button>
+          <button type="button" class="symbol-btn" data-symbol="θ" title="각도 θ">θ</button>
+          <button type="button" class="symbol-btn" data-symbol="Δ" title="델타 Δ">Δ</button>
+          <button type="button" class="symbol-btn" data-symbol="°" title="도(각도)">°</button>
+          <button type="button" class="symbol-btn" data-symbol="π" title="파이 π">π</button>
+          <button type="button" class="symbol-btn" data-symbol="×" title="곱하기">×</button>
+          <button type="button" class="symbol-btn" data-symbol="÷" title="나누기">÷</button>
+          <button type="button" class="symbol-btn" data-symbol="≈" title="근사값">≈</button>
+          <button type="button" class="symbol-btn" data-symbol="²" title="제곱">²</button>
+        </div>
         <div class="answer" contenteditable="true" data-ph="① 경로차 → ② 보강간섭 조건 → ③ 근사 → ④ 이웃한 두 무늬의 위치 차 순서로 쓰세요." data-q="3" style="min-height:150px"></div>
         <details class="noprint"><summary>힌트</summary><p>m차와 (m+1)차 밝은 무늬의 위치를 각각 구한 뒤 두 값을 빼면 m이 사라집니다. 실험값으로 λL/d를 계산해 측정 Δy와 비교해 검증도 해 보세요.</p></details>
       </div>
@@ -441,6 +485,13 @@ details p{margin:8px 0 0;padding:10px 12px;background:#F2F5F9;border-left:2px so
       <div class="qbody">
         <div class="qtag">간섭 실험 결과에 영향을 주는 요인 설명하기</div>
         <p class="qtext">이중 슬릿 간섭 실험에서 보강간섭이 일어나는 조건을 경로차로 제시하시오.</p>
+        <div class="symbolbar noprint" data-target="4">
+          <span class="symbolbar-label">기호 삽입:</span>
+          <button type="button" class="symbol-btn" data-symbol="λ" title="파장 λ">λ</button>
+          <button type="button" class="symbol-btn" data-symbol="θ" title="각도 θ">θ</button>
+          <button type="button" class="symbol-btn" data-symbol="Δ" title="델타 Δ">Δ</button>
+          <button type="button" class="symbol-btn" data-symbol="×" title="곱하기">×</button>
+        </div>
         <div class="answer" contenteditable="true" data-ph="조건식을 쓰세요." data-q="4"></div>
         <details class="noprint"><summary>힌트</summary><p>두 파동의 마루와 마루가 만나려면 한 파동이 다른 파동보다 정확히 몇 파장만큼 더 멀리 온 것이어야 할지 생각해 보세요.</p></details>
       </div>
@@ -453,6 +504,13 @@ details p{margin:8px 0 0;padding:10px 12px;background:#F2F5F9;border-left:2px so
       <div class="qbody">
         <div class="qtag">간섭 실험 결과에 영향을 주는 요인 설명하기</div>
         <p class="qtext">이중 슬릿 간섭 실험에서 상쇄간섭이 일어나는 조건을 경로차로 제시하시오.</p>
+        <div class="symbolbar noprint" data-target="5">
+          <span class="symbolbar-label">기호 삽입:</span>
+          <button type="button" class="symbol-btn" data-symbol="λ" title="파장 λ">λ</button>
+          <button type="button" class="symbol-btn" data-symbol="θ" title="각도 θ">θ</button>
+          <button type="button" class="symbol-btn" data-symbol="Δ" title="델타 Δ">Δ</button>
+          <button type="button" class="symbol-btn" data-symbol="×" title="곱하기">×</button>
+        </div>
         <div class="answer" contenteditable="true" data-ph="" data-q="5"></div>
         <details class="noprint"><summary>힌트</summary><p>보강간섭 조건과 견주어 보세요. 한 파동의 마루가 다른 파동의 골과 만나려면 경로차가 몇 파장만큼이어야 할지 생각하면 됩니다.</p></details>
       </div>
@@ -470,6 +528,13 @@ details p{margin:8px 0 0;padding:10px 12px;background:#F2F5F9;border-left:2px so
           <div class="row"><span>빛 B</span><canvas id="cmpB"></canvas></div>
           <div class="ruler-row"><canvas id="cmpR"></canvas></div>
           <div class="cap">눈금 단위는 mm이며, 두 무늬 모두 같은 배율로 나타냈습니다.</div>
+        </div>
+        <div class="symbolbar noprint" data-target="6">
+          <span class="symbolbar-label">기호 삽입:</span>
+          <button type="button" class="symbol-btn" data-symbol="λ" title="파장 λ">λ</button>
+          <button type="button" class="symbol-btn" data-symbol="Δ" title="델타 Δ">Δ</button>
+          <button type="button" class="symbol-btn" data-symbol="&gt;" title="크다">&gt;</button>
+          <button type="button" class="symbol-btn" data-symbol="&lt;" title="작다">&lt;</button>
         </div>
         <div class="answer" contenteditable="true" data-ph="" data-q="6"></div>
         <details class="noprint"><summary>힌트</summary><p>d와 L이 같다면 Δy는 λ에만 비례합니다. 자 눈금으로 밝은 무늬 여러 개를 한꺼번에 재서 Δy를 구해 비교해 보세요.</p></details>
@@ -777,6 +842,37 @@ $('btn-download').addEventListener('click',function(){
   a.click(); URL.revokeObjectURL(a.href);
 });
 $('btn-print').addEventListener('click',function(){ window.print(); });
+
+/* ---------- 기호 삽입 버튼 ---------- */
+document.querySelectorAll('.symbol-btn').forEach(function(btn){
+  // mousedown에서 기본 동작을 막아 답안란의 커서 위치(선택 영역)가 사라지지 않도록 함
+  btn.addEventListener('mousedown', function(e){ e.preventDefault(); });
+  btn.addEventListener('click', function(){
+    var sym = btn.getAttribute('data-symbol');
+    var bar = btn.closest('.symbolbar');
+    var qid = bar ? bar.getAttribute('data-target') : null;
+    var target = qid ? document.querySelector('.answer[data-q="'+qid+'"]') : null;
+    if(!target) return;
+
+    if(document.activeElement === target){
+      // 이 버튼이 속한 답안란에 이미 커서가 있으면 그 위치에 바로 삽입
+      document.execCommand('insertText', false, sym);
+    } else{
+      // 다른 답안란에 커서가 있었거나 아직 아무 곳도 클릭하지 않았다면
+      // 이 버튼이 속한 답안란 맨 끝에 포커스를 옮기고 삽입
+      target.focus();
+      var range = document.createRange();
+      range.selectNodeContents(target);
+      range.collapse(false);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      document.execCommand('insertText', false, sym);
+    }
+    btn.classList.add('just-used');
+    setTimeout(function(){ btn.classList.remove('just-used'); }, 150);
+  });
+});
 
 /* ---------- 초기화 ---------- */
 var d=new Date();
